@@ -1,8 +1,9 @@
-
+l
 package com.aliasantech.quiz
 
 import android.app.Activity
 import android.os.Bundle
+import android.content.Intent
 import android.graphics.Color
 import android.view.Gravity
 import android.view.ViewGroup
@@ -16,6 +17,9 @@ class GuestActivity : Activity() {
     private lateinit var networkManager: NetworkManager
     private lateinit var statusText: TextView
     private lateinit var ipInput: EditText
+    private lateinit var connectButton: Button
+
+    private var connected = false
 
     private fun dp(value: Int): Int {
         return (value * resources.displayMetrics.density).toInt()
@@ -33,31 +37,26 @@ class GuestActivity : Activity() {
         layout.setBackgroundColor(Color.rgb(15, 25, 50))
 
         val title = TextView(this)
-        title.text = "ورود به بازی"
-        title.textSize = 26f
+        title.text = "ورود به مسابقه"
+        title.textSize = 27f
         title.setTextColor(Color.WHITE)
         title.gravity = Gravity.CENTER
 
         ipInput = EditText(this)
-        ipInput.hint = "آدرس IP میزبان را وارد کنید"
-        ipInput.textSize = 17f
+        ipInput.hint = "IP میزبان"
         ipInput.setSingleLine(true)
         ipInput.inputType = 0x00001001
         ipInput.setTextColor(Color.WHITE)
         ipInput.setHintTextColor(Color.LTGRAY)
 
-        val connectButton = Button(this)
+        connectButton = Button(this)
         connectButton.text = "اتصال به میزبان"
 
         statusText = TextView(this)
-        statusText.text = "هنوز متصل نشده‌اید"
+        statusText.text = "منتظر اتصال..."
         statusText.textSize = 18f
         statusText.setTextColor(Color.YELLOW)
         statusText.gravity = Gravity.CENTER
-
-        val sendButton = Button(this)
-        sendButton.text = "ارسال پیام آزمایشی"
-        sendButton.isEnabled = false
 
         layout.addView(title)
 
@@ -71,15 +70,15 @@ class GuestActivity : Activity() {
 
         layout.addView(connectButton)
         layout.addView(statusText)
-        layout.addView(sendButton)
 
         setContentView(layout)
 
         connectButton.setOnClickListener {
+
             val ip = ipInput.text.toString().trim()
 
             if (ip.isEmpty()) {
-                ipInput.error = "آدرس IP را وارد کنید"
+                ipInput.error = "IP را وارد کنید"
                 return@setOnClickListener
             }
 
@@ -89,27 +88,46 @@ class GuestActivity : Activity() {
             networkManager.connectGuest(
                 ip,
                 onStatus = { message ->
+
                     statusText.text = message
 
                     if (message == "دو گوشی متصل شدند!") {
-                        sendButton.isEnabled = true
+                        connected = true
+
+                        statusText.text =
+                            "متصل شدید! منتظر شروع میزبان باشید."
+
+                        networkManager.sendMessage(
+                            GameProtocol.READY
+                        )
                     } else {
                         connectButton.isEnabled = true
                     }
                 },
                 onMessage = { message ->
-                    statusText.text = "پیام میزبان: $message"
+
+                    if (message == GameProtocol.START) {
+
+                        GameSession.isHost = false
+                        GameSession.isConnected = true
+                        GameSession.gameStarted = true
+
+                        startActivity(
+                            Intent(this, GameActivity::class.java)
+                        )
+
+                    } else {
+                        statusText.text = "پیام میزبان: $message"
+                    }
                 }
             )
-        }
-
-        sendButton.setOnClickListener {
-            networkManager.sendMessage("سلام از بازیکن دوم!")
         }
     }
 
     override fun onDestroy() {
-        networkManager.close()
+        if (!connected || isFinishing) {
+            networkManager.close()
+        }
         super.onDestroy()
     }
 }
