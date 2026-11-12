@@ -1,3 +1,4 @@
+
 name: Build AliAsan Quiz APK
 
 on:
@@ -26,14 +27,14 @@ jobs:
           gradle-version: '8.13'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
-      - name: Install SDK
+      - name: Install Android SDK Packages
         run: |
           sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build APK
-        run: gradle assembleDebug
+        run: gradle assembleDebug --no-daemon
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
