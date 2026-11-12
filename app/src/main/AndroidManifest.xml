@@ -11,8 +11,8 @@
         android:allowBackup="false"
         android:label="مسابقه هوش علی آسان"
         android:supportsRtl="true"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar">
-
+        android:theme="@style/AppTheme"
+        
         <activity
             android:name=".MainActivity"
             android:exported="true">
