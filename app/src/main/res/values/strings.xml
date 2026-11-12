@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">مسابقه هوش علی آسان</string>
+    <string name="host">ساخت بازی (میزبان)</string>
+    <string name="guest">ورود به بازی (مهمان)</string>
+    <string name="waiting">در انتظار بازیکن دوم...</string>
+    <string name="start_game">شروع مسابقه</string>
+    <string name="exit">خروج از بازی</string>
+</resources>
