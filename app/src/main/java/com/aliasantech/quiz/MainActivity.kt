@@ -3,6 +3,7 @@ package com.aliasantech.quiz
 
 import android.app.Activity
 import android.os.Bundle
+import android.content.Intent
 import android.graphics.Color
 import android.view.Gravity
 import android.view.ViewGroup
@@ -27,11 +28,9 @@ class MainActivity : Activity() {
 
         val title = TextView(this)
         title.text = "مسابقه هوش علی آسان"
-        title.textSize = 27f
+        title.textSize = 28f
         title.setTextColor(Color.WHITE)
         title.gravity = Gravity.CENTER
-
-        root.addView(title)
 
         val subtitle = TextView(this)
         subtitle.text = "یک رقابت فکری دونفره!"
@@ -39,46 +38,43 @@ class MainActivity : Activity() {
         subtitle.setTextColor(Color.LTGRAY)
         subtitle.gravity = Gravity.CENTER
 
-        val subtitleParams = LinearLayout.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        subtitleParams.topMargin = dp(15)
-        subtitleParams.bottomMargin = dp(35)
-
-        root.addView(subtitle, subtitleParams)
-
         val hostButton = Button(this)
         hostButton.text = "ساخت بازی (میزبان)"
 
         val guestButton = Button(this)
         guestButton.text = "ورود به بازی (مهمان)"
 
-        val buttonParams = LinearLayout.LayoutParams(
+        val params = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
             dp(60)
         )
-        buttonParams.bottomMargin = dp(20)
+        params.bottomMargin = dp(20)
 
-        root.addView(hostButton, buttonParams)
-        root.addView(guestButton, buttonParams)
+        root.addView(title)
+
+        val subParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        subParams.topMargin = dp(15)
+        subParams.bottomMargin = dp(35)
+
+        root.addView(subtitle, subParams)
+        root.addView(hostButton, params)
+        root.addView(guestButton, params)
+
+        setContentView(root)
 
         hostButton.setOnClickListener {
-            showMessage("بخش ساخت اتاق به زودی آماده می‌شود")
+            startActivity(
+                Intent(this, HostActivity::class.java)
+            )
         }
 
         guestButton.setOnClickListener {
-            showMessage("بخش ورود به اتاق به زودی آماده می‌شود")
+            startActivity(
+                Intent(this, GuestActivity::class.java)
+            )
         }
-
-        setContentView(root)
-    }
-
-    private fun showMessage(message: String) {
-        android.widget.Toast.makeText(
-            this,
-            message,
-            android.widget.Toast.LENGTH_SHORT
-        ).show()
     }
 }
